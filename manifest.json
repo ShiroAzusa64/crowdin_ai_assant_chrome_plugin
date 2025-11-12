@@ -1,0 +1,26 @@
+{
+    "manifest_version": 3,
+    "name": "CrowdinHelper",
+    "description": "Crowdin Helper",
+    "version": "0.0.1",
+    "permissions": [
+        "activeTab"
+    ],
+    "host_permissions": [
+    "https://*.crowdin.com/*",
+    "https://dashscope.aliyuncs.com/*"
+    ],
+    "content_scripts": [{
+        "matches": ["*://*.crowdin.com/editor/*"],
+        "js": ["js/editor.js"],
+        "all_frames": true
+    }],
+    "action": {
+    "default_popup": "popup.html",
+    "default_title": "AI Configure"
+    },
+    "background": {
+    "service_worker": "js/background.js"
+    },
+    "permissions": ["storage"]
+}
