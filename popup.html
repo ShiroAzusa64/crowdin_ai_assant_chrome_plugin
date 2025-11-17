@@ -7,17 +7,22 @@
     body {font-family: sans-serif; width: 320px; padding: 15px;}
     input, button {width: 100%; padding: 8px; margin: 8px 0;}
     button {background: #4285f4; color: white; border: none;}
+    button:active {
+      background-color: #2b6bcb;
+      transform: translateY(1px);
+    }
     .status {color: green; font-size: 0.9em; margin-top: 10px;}
   </style>
 </head>
 <body>
   <h3>AI Configure</h3>
-  <input id="url" placeholder="AI call URL（such as https://api.openai.com/v1/chat/completions）">
+  <input id="aiUrl" placeholder="AI call URL（such as https://api.openai.com/v1/chat/completions）">
   <input id="model" placeholder="model">
-  <input id="apikey" type="password" placeholder="API Key">
+  <input id="apiKey" type="password" placeholder="API Key">
   <input id="targetLanguage" placeholder="Target Language">
+  <input id="historyLength" placeholder="History Length">
   <button id="save">Save</button>
   <div id="status" class="status"></div>
-  <script src="js/popup.js"></script>
+  <script src="js/popup.js" type="module"></script>
 </body>
 </html>

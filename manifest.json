@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "CrowdinHelper",
     "description": "Crowdin Helper",
-    "version": "0.0.1",
+    "version": "2.1",
     "permissions": [
         "activeTab"
     ],
@@ -20,7 +20,8 @@
     "default_title": "AI Configure"
     },
     "background": {
-    "service_worker": "js/background.js"
+    "service_worker": "js/background.js",
+    "type": "module"
     },
     "permissions": ["storage"]
 }

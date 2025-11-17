@@ -1,5 +1,6 @@
 # AI assant translation plugin for chrome
 
-need ai apikey 
 
-initialized a new repository and push -f it.killed the original one.what I have done😂
+provide new function in crowdin editor,invoke LLM to translate strings
+
+all the config entry are in popup window

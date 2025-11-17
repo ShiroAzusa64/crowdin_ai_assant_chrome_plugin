@@ -1,32 +1,29 @@
 const $ = id => document.getElementById(id);
 const status = $('status');
+const button = $('save');
+const getValue = name => $(name).value;
 
-
+import {Varables} from './background.js'
+console.log(Varables);
 function save(){
-  const config = {
-    aiUrl: $('url').value.trim(),
-    model: $('model').value.trim(),
-    apiKey: $('apikey').value.trim(),
-    targetLanguage: $('targetLanguage').value.trim()
-  };
-
+  let config = {};
+  Varables.forEach((key) => {config[key]=getValue(key)});
   chrome.storage.local.set(config, () => {
-    setTimeout(() => status.textContent = '', 2000);
-
     chrome.runtime.sendMessage({type: 'CONFIG_SAVED'});
   });
 }
-$('save').onclick = () => {save();status.textContent = 'Config Saved';};
+button.onclick = () => {
+  save();
+  status.textContent = 'Config Saved';
+  setTimeout(() => status.textContent = '', 2000);
+};
 
 document.addEventListener('DOMContentLoaded', () => {
-  chrome.storage.local.get(['aiUrl', 'apiKey', 'targetLanguage','model'], items => {
-    $('url').value = items.aiUrl || '';
-    $('model').value = items.model || '';
-    $('apikey').value = items.apiKey || '';
-    $('targetLanguage').value = items.targetLanguage || '';
+  chrome.storage.local.get(Varables, items => {
+    Varables.forEach((key) => {$(key).value=items[key] || ''});
   });
 });
-const autoSave = setInterval(save, 500);
+const autoSave = setInterval(save, 1000);
 window.addEventListener('unload', () => {
     clearInterval(autoSave);
 });

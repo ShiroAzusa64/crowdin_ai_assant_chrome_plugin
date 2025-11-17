@@ -1,47 +1,16 @@
-let GLOBAL_CONFIG = {
-  aiUrl: '',
-  apiKey: '',
-  targetLanguage: ''
-};
+export const Varables=['aiUrl', 'apiKey', 'targetLanguage','model','historyLength'];
+
+var GLOBAL_CONFIG = {};
 
 async function loadConfig() {
   return new Promise(resolve => {
-    chrome.storage.local.get(['aiUrl', 'apiKey','targetLanguage','model'], items => {
-      GLOBAL_CONFIG.aiUrl = items.aiUrl || '';
-      GLOBAL_CONFIG.apiKey = items.apiKey || '';
-      GLOBAL_CONFIG.targetLanguage = items.targetLanguage || '';
-      GLOBAL_CONFIG.model = items.model || '';
+    chrome.storage.local.get(Varables, items => {
+      GLOBAL_CONFIG=items;
       console.log('Config Loaded:', GLOBAL_CONFIG);
       resolve(GLOBAL_CONFIG);
     });
   });
 }
-
-chrome.storage.onChanged.addListener((changes, area) => {
-  if (area !== 'local') return;
-
-  let changed = false;
-  if (changes.aiUrl) {
-    GLOBAL_CONFIG.aiUrl = changes.aiUrl.newValue || '';
-    changed = true;
-  }
-  if (changes.apiKey) {
-    GLOBAL_CONFIG.apiKey = changes.apiKey.newValue || '';
-    changed = true;
-  }
-
-  if (changed) {
-    console.log('Config Updated:', GLOBAL_CONFIG);
-    chrome.tabs.query({}, tabs => {
-      tabs.forEach(tab => {
-        chrome.tabs.sendMessage(tab.id, {
-          type: 'CONFIG_UPDATED',
-          config: GLOBAL_CONFIG
-        });
-      });
-    });
-  }
-});
 
 loadConfig();
 
@@ -64,6 +33,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       break;
     case 'GET_CONFIG':
       sendResponse({ success: true, data:GLOBAL_CONFIG});
+      break;
+    case 'CONFIG_SAVED':
+      loadConfig();
       break;
   }
 });

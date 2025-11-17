@@ -19,6 +19,7 @@ function getKeyword(){
 }
 
 async function setupButton(func,func2){
+  console.log('Crowdin helper plugin')
     while($$('button#suggest_translation').length==0){
         await new Promise(resolve => setTimeout(resolve, 50));
     }
@@ -46,15 +47,16 @@ async function setupButton(func,func2){
       setText($$("textarea#translation")[0].value.replaceAll("（"," (").replaceAll("）",") "));
     });
     oldButton.parentNode.appendChild(newButton);
-    $$('button#suggest_translation')[0].addEventListener('click', () => {
+    $$('button#suggest_translation')[0].addEventListener('click',async () => {
       let historyEntry={
         string: `${getKeyword()}`,
         translation: `${$$("textarea#translation")[0].value}`
       };
-      if(history.length>10){
+      let config=await chromeRPC('GET_CONFIG');
+      if(history.length>config.historyLength){
         history.shift();
       }
-      strHistory.push(historyEntry)
+      strHistory.push(historyEntry);
     });
 }
 function setText(str){
@@ -104,12 +106,22 @@ async function askAI(system,str){
       });
 }
 
+function isEmpty(value) {
+  if (value == null) return true;
+  if (typeof value === 'string' && value.trim() === '') return true;
+  return false;
+}
+
 async function invokeAI(){
     let config=await chromeRPC('GET_CONFIG');
+    if(Object.values(config).some((entry) => isEmpty(entry))){
+      window.alert("Some config entrys are empty.Please fill them and retry");
+      console.log("unconfig varables")
+      return;
+    }
     let context=getKeywordAll();
     context.shift();
     let Str=getKeyword();
-    let src=$$(".singular")[0].textContent;
     pendingTread++;
     $$('button#ai_btn')[0].textContent=`${pendingTread} pending,${cacheThread} cache`;
     let response=await askAI(`You are translation assant.You need to automaticly detect the source string language and translate to ${config.targetLanguage}.you are translating [file,project,platform] in ${document.title}.you need to guess will this a GUI entry,a document,a html.or a GUI explanation,and read the translation history to have the best translation.you must output as pure json format,you will get a json like {"history":[{"string":"","translation":""}],"currentString":"","currentStringContext":["",""]} and you need to response in form {"translation":""}`,`{"history":${JSON.stringify(strHistory)},"currentString":${Str},"currentStringContext":${JSON.stringify(context)}}`);
@@ -117,7 +129,7 @@ async function invokeAI(){
     pendingTread--;
     cacheThread++;
     $$('button#ai_btn')[0].textContent=`${pendingTread} pending,${cacheThread} cache`;
-    while($$(".singular")[0].textContent!=src){
+    while(getKeyword()!=Str){
         await new Promise(resolve => setTimeout(resolve, 500));;
     }
     setText(JSON.parse(response.choices[0].message.content).translation);
