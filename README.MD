@@ -3,4 +3,4 @@
 
 provide new function in crowdin editor,invoke LLM to translate strings
 
-all the config entry are in popup window
+all the config entrys are in popup window
